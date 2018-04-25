@@ -4,6 +4,7 @@
 # このスクリプトをサーバ側に置き、webブラウザ経由で画面表示させる
 #
 # 2018/Apr/15  ver 1.0
+# 2018/Apr/25  ver 1.1  - 湿度グラフ追加
 
 use strict;
 use warnings;
@@ -16,7 +17,8 @@ binmode( STDOUT, ":utf8" );
 binmode( STDERR, ":utf8" );
 require '../bin/draw_tempgraph.pl';
 
-my $filenameGraph = 'temperature_graph.png';
+my $filenameGraph_1 = 'temperature_graph.png';
+my $filenameGraph_2 = 'temperature_humid.png';
 my $str_this_script = basename($0); # このスクリプト自身のファイル名
 
 main();
@@ -114,7 +116,8 @@ sub main {
 
     # グラフ（PNG画像）
     print
-"<p><img src='../$filenameGraph' width='500' height='250' alt='tempereture' /></p>\n";
+    "<p><img src='../$filenameGraph_1' width='500' height='250' alt='tempereture' /></p>\n"
+    ."<p><img src='../$filenameGraph_2' width='500' height='250' alt='tempereture' /></p>\n";
     # 抽出期間のテキスト表示
     print "<p>ログ抽出期間  $timeMin("
       . ( $yearMin + 1900 ) . "/"
