@@ -5,22 +5,26 @@
 # このスクリプトをクライアント側のRaspberryPiに置き、
 #    サーバにデータを送信する。cronで5分ごとに自動起動設定する
 # 2018/Apr/15  ver 1.0
+# 2018/Apr/24  ver 1.1  -- 湿度データ送信を追加
 
 use strict;
 use warnings;
 
 {
-my $temp_room = 15;      # 室温
+my $temp_room = 0;      # 室温
 my $temp_sys = 0;       # RaspberryPi システム温度
+my $humid = 0;          # 湿度
 
 # webアクセス時の簡易パスワード
 my $PWD = '1234ABCD';
 
 # Raspberry Piの温度データ読み込み
-#getTemperature(\$temp_room, \$temp_sys);
+getTemperature(\$temp_room, \$temp_sys);
+# Raspberry Piの湿度データ読み込み
+getHumidity(\$humid);
 
-#socketGetHtml("http://www.example.com/cgi-bin/add_data.cgi?pwd=$PWD", "", "temp_room=$temp_room&temp_sys=$temp_sys", 5);
-socketGetHtml("http://localhost/log-graph/add_data.cgi?pwd=$PWD", "", "temp_room=$temp_room&temp_sys=$temp_sys", 5);
+socketGetHtml("http://www.example.com/cgi-bin/add_data.cgi?pwd=$PWD", "", "temp_room=$temp_room&temp_sys=$temp_sys&humid=$humid", 5);
+#socketGetHtml("http://localhost/log-graph/add_data.cgi?pwd=$PWD", "", "temp_room=$temp_room&temp_sys=$temp_sys", 5);
 
 exit;
 }
@@ -138,3 +142,16 @@ sub getTemperature {
 
     return;
 }
+
+# DHT11から湿度を読み出す
+sub getHumidity {
+    my $refHumid = shift;
+
+    use RPi::DHT11;
+
+    my $dht11 = RPi::DHT11->new(27);
+    $$refHumid = $dht11->humidity;
+
+    return;
+}
+
