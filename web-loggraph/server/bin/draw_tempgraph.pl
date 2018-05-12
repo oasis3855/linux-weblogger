@@ -5,6 +5,7 @@
 #
 # 2018/Apr/15  ver 1.0
 # 2018/Apr/25  ver 1.1  - 湿度グラフ追加
+# 2018/May/11  ver 1.2  - 気圧グラフ追加
 
 use strict;
 use warnings;
@@ -12,54 +13,48 @@ use warnings;
 use Time::Local;
 use GD;
 use DBI;
-my $WIDTH  = 500;
-my $HEIGHT = 250;
-my $MARGIN = 10;
-my $timeMin;
-my $timeMax;
-my $tempMin = 0;
-my $tempMax = 50;
-my $humidMin = 20;
-my $humidMax = 70;
+
+use constant WIDTH          => 500;
+use constant HEIGHT         => 250;
+use constant MARGIN         => 10;
+
+use constant TEMP_MIN       => 0;
+use constant TEMP_MAX       => 50;
+use constant HUMID_MIN      => 20;
+use constant HUMID_MAX      => 70;
+use constant PRES_MIN       => 940;
+use constant PRES_MAX       => 1030;
 
 # DSNファイル名は相対パス（一旦ホームディレクトリに戻って、binを参照）
 my $strSqlDsn     = 'DBI:SQLite:dbname=../bin/data.sqlite3';    # DSN
 my $filenameSql = '../bin/data.sqlite3';
 my $filenameGraph_1 = '../temperature_graph.png';
 my $filenameGraph_2 = '../temperature_humid.png';
+my $filenameGraph_3 = '../temperature_pressure.png';
 
 sub drawTempgraph {
 
     # 引数
-    ( $timeMin, $timeMax, $tempMin, $tempMax ) = @_;
+    my ( $timeMin, $timeMax ) = @_;
 
     # 引数の汚染除去のための「数値化」と、前後関係チェック
     $timeMin = $timeMin + 0;
     $timeMax = $timeMax + 0;
-    $tempMin = $tempMin + 0;
-    $tempMax = $tempMax + 0;
     if ( $timeMin > $timeMax ) { return; }
-    if ( $tempMin > $tempMax ) { return; }
 
-#    print "<p>$timeMin, $timeMax, $tempMin, $tempMax</p>";
-
-    my $image_1 = new GD::Image( $WIDTH + $MARGIN * 2, $HEIGHT + $MARGIN * 2 );
-    my $image_2 = new GD::Image( $WIDTH + $MARGIN * 2, $HEIGHT + $MARGIN * 2 );
-
-    # カラー インデックス
-    my $colorWhite_1 = $image_1->colorAllocate( 255, 255, 255 );
-    my $colorWhite_2 = $image_2->colorAllocate( 255, 255, 255 );
-    my $colorRed   = $image_1->colorAllocate( 200, 0,   0 );
-    my $colorGreen = $image_1->colorAllocate( 0,   200, 0 );
-    my $colorBlue = $image_2->colorAllocate( 75,   75, 200 );
+    my $image_1 = new GD::Image( WIDTH + MARGIN * 2, HEIGHT + MARGIN * 2 );
+    my $image_2 = new GD::Image( WIDTH + MARGIN * 2, HEIGHT + MARGIN * 2 );
+    my $image_3 = new GD::Image( WIDTH + MARGIN * 2, HEIGHT + MARGIN * 2 );
 
     # 背景色を透明
-    $image_1->transparent($colorWhite_1);
-    $image_2->transparent($colorWhite_2);
+    $image_1->transparent(colorAllocate( 255, 255, 255 ));
+    $image_2->transparent(colorAllocate( 255, 255, 255 ));
+    $image_3->transparent(colorAllocate( 255, 255, 255 ));
 
     # 座標軸を描画
-    imageDrawGrid( \$image_1, $timeMin, $timeMax, $tempMin, $tempMax );
-    imageDrawGrid( \$image_2, $timeMin, $timeMax, $humidMin, $humidMax );
+    imageDrawGrid( \$image_1, $timeMin, $timeMax, TEMP_MIN, TEMP_MAX );
+    imageDrawGrid( \$image_2, $timeMin, $timeMax, HUMID_MIN, HUMID_MAX );
+    imageDrawGrid( \$image_3, $timeMin, $timeMax, PRES_MIN, PRES_MAX );
 
 #    $timeMin = timelocal( 0, 0, 0, 15, 4 - 1, 2016 - 1900 );  # 2018/1/1 0:00:00
 #    $timeMax = timelocal( 0, 0, 0, 15, 4 - 1, 2018 - 1900 );  # 2018/1/2 0:00:00
@@ -77,22 +72,27 @@ sub drawTempgraph {
 
         $x1 = $arr->[0];
         $y1 = $arr->[2];
-        if ( $tempMax > $y1 && $y1 > $tempMin ) {
-            convParam( \$y1, \$x1, $timeMin, $timeMax, $tempMin, $tempMax );
-            #            $image->setPixel($x1,$y1,$colorGreen);
-            $image_1->arc( $x1, $y1, 2, 2, 0, 360, $colorGreen );
+        if ( TEMP_MAX > $y1 && $y1 > TEMP_MIN ) {
+            convParam( \$y1, \$x1, $timeMin, $timeMax, TEMP_MIN, TEMP_MAX );
+            $image_1->arc( $x1, $y1, 2, 2, 0, 360, colorAllocate( 0, 200, 0 ) );
         }
         $x1 = $arr->[0];
         $y1 = $arr->[1];
-        if ( $tempMax > $y1 && $y1 > $tempMin ) {
-            convParam( \$y1, \$x1, $timeMin, $timeMax, $tempMin, $tempMax );
-            $image_1->arc( $x1, $y1, 2, 2, 0, 360, $colorRed );
+        if ( TEMP_MAX > $y1 && $y1 > TEMP_MIN ) {
+            convParam( \$y1, \$x1, $timeMin, $timeMax, TEMP_MIN, TEMP_MAX );
+            $image_1->arc( $x1, $y1, 2, 2, 0, 360, colorAllocate( 200, 0, 0 ) );
         }
         $x1 = $arr->[0];
         $y1 = $arr->[3];
-        if ( $humidMax > $y1 && $y1 > $humidMin ) {
-            convParam( \$y1, \$x1, $timeMin, $timeMax, $humidMin, $humidMax );
-            $image_2->arc( $x1, $y1, 2, 2, 0, 360, $colorBlue );
+        if ( HUMID_MAX > $y1 && $y1 > HUMID_MIN ) {
+            convParam( \$y1, \$x1, $timeMin, $timeMax, HUMID_MIN, HUMID_MAX );
+            $image_2->arc( $x1, $y1, 2, 2, 0, 360, colorAllocate( 75, 75, 200 ) );
+        }
+        $x1 = $arr->[0];
+        $y1 = $arr->[4];
+        if ( PRES_MAX > $y1 && $y1 > PRES_MIN ) {
+            convParam( \$y1, \$x1, $timeMin, $timeMax, PRES_MIN, PRES_MAX );
+            $image_3->arc( $x1, $y1, 2, 2, 0, 360, colorAllocate( 200, 75, 200 ) );
         }
     }
 
@@ -108,6 +108,12 @@ sub drawTempgraph {
         binmode FILE_2;
         print FILE_2 $image_2->png;
         close(FILE_2);
+
+        open( FILE_3, "> $filenameGraph_3" ) or die($!);
+        binmode FILE_3;
+        print FILE_3 $image_3->png;
+        close(FILE_3);
+
     };
     if ($@) {
         print "$@";
@@ -123,11 +129,11 @@ sub convParam {
     my ($refY, $refX, $x_min, $x_max, $y_min, $y_max ) = @_;
 
     $$refX =
-      $WIDTH * ( $$refX - $x_min ) / ( $x_max - $x_min ) + $MARGIN;
+      WIDTH * ( $$refX - $x_min ) / ( $x_max - $x_min ) + MARGIN;
     $$refY =
-      $HEIGHT -
-      $HEIGHT * ( $$refY - $y_min ) / ( $y_max - $y_min ) +
-      $MARGIN;
+      HEIGHT -
+      HEIGHT * ( $$refY - $y_min ) / ( $y_max - $y_min ) +
+      MARGIN;
 }
 
 # GDイメージに座標軸を描画
@@ -138,8 +144,6 @@ sub imageDrawGrid {
     my $colorWhite = $$image->colorAllocate( 255, 255, 255 );
     my $colorBlack = $$image->colorAllocate( 0,   0,   0 );
     my $colorGray  = $$image->colorAllocate( 150, 150, 150 );
-    my $colorRed   = $$image->colorAllocate( 200, 0,   0 );
-    my $colorGreen = $$image->colorAllocate( 0,   200, 0 );
 
     # 縦軸（左端）
     my $x1 = $x_min;
@@ -160,7 +164,7 @@ sub imageDrawGrid {
     $$image->line( $x1, $y1, $x2, $y2, $colorBlack );
 
     # 縦軸（温度）目盛線
-    for ( my $i = ( int( $y_min / 10 ) + 1 ) * 10 ; $i < $y_max ; $i += 10 )
+    for ( my $i = ( int( $y_min / 10 ) + 1 ) * 10 ; $i <= $y_max ; $i += 10 )
     {
         $x1 = $x_min;
         $y1 = $i;
@@ -180,7 +184,7 @@ sub imageDrawGrid {
         my ( $sec, $min, $hour, $mday, $mon, $year ) = localtime($x_min);
         my $hourStart =
           timelocal( 0, 0, ( int( $hour / 2 ) + 1 ) * 2, $mday, $mon, $year );
-        for ( my $i = $hourStart ; $i < $x_max ; $i += 2 * 60 * 60 ) {
+        for ( my $i = $hourStart ; $i <= $x_max ; $i += 2 * 60 * 60 ) {
             $x1 = $i;
             $y1 = $y_min;
             $x2 = $i;
@@ -191,7 +195,7 @@ sub imageDrawGrid {
             $$image->line( $x1, $y1, $x2, $y2,
                            $hour == 0 ? $colorBlack : $colorGray );
 
-            $$image->string( gdTinyFont, $x1, $HEIGHT + $MARGIN,
+            $$image->string( gdTinyFont, $x1, HEIGHT + MARGIN,
                              $hour, $colorBlack );
         }
     } elsif ( $x_max - $x_min <= 15 * 24 * 60 * 60 ) {
@@ -199,7 +203,7 @@ sub imageDrawGrid {
         # 15日以内の場合、1日毎の目盛線
         my ( $sec, $min, $hour, $mday, $mon, $year ) = localtime($x_min);
         my $hourStart = timelocal( 0, 0, 0, $mday + 1, $mon, $year );
-        for ( my $i = $hourStart ; $i < $x_max ; $i += 24 * 60 * 60 ) {
+        for ( my $i = $hourStart ; $i <= $x_max ; $i += 24 * 60 * 60 ) {
             $x1 = $i;
             $y1 = $y_min;
             $x2 = $i;
@@ -210,7 +214,7 @@ sub imageDrawGrid {
             $$image->line( $x1, $y1, $x2, $y2,
                            $mday % 5 == 0 ? $colorBlack : $colorGray );
 
-            $$image->string( gdTinyFont, $x1, $HEIGHT + $MARGIN,
+            $$image->string( gdTinyFont, $x1, HEIGHT + MARGIN,
                              $mday, $colorBlack );
         }
     } elsif ( $x_max - $x_min <= 2 * 365 * 24 * 60 * 60 ) {
@@ -222,7 +226,7 @@ sub imageDrawGrid {
                          'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
                          'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'
         );
-        for ( my $i = $hourStart ; $i < $x_max ; ) {
+        for ( my $i = $hourStart ; $i <= $x_max ; ) {
             $x1 = $i;
             $y1 = $y_min;
             $x2 = $i;
@@ -233,7 +237,7 @@ sub imageDrawGrid {
             $$image->line( $x1, $y1, $x2, $y2,
                            $mday % 5 == 0 ? $colorBlack : $colorGray );
 
-            $$image->string( gdTinyFont, $x1, $HEIGHT + $MARGIN,
+            $$image->string( gdTinyFont, $x1, HEIGHT + MARGIN,
                              $strMonth[$mon], $colorBlack );
 
             # 翌月1日に繰り上げる
@@ -296,15 +300,12 @@ sub databaseGetData {
 sub printLastAddedData {
 
     # 引数
-    ( $timeMin, $timeMax, $tempMin, $tempMax ) = @_;
+    my ( $timeMin, $timeMax ) = @_;
 
     # 引数の汚染除去のための「数値化」と、前後関係チェック
     $timeMin = $timeMin + 0;
     $timeMax = $timeMax + 0;
-    $tempMin = $tempMin + 0;
-    $tempMax = $tempMax + 0;
     if ( $timeMin > $timeMax ) { return; }
-    if ( $tempMin > $tempMax ) { return; }
 
     my ( $sec, $min, $hour, $mday, $mon, $year );
 
