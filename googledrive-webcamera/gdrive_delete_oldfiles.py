@@ -8,6 +8,7 @@
 # GNU GPL Free Software (http://www.opensource.jp/gpl/gpl.ja.html)
 #
 # version 1.0 (2019/Feb/07)
+# version 1.1 (2021/Dec/30) - Python3対応
 
 import sys
 import datetime
@@ -77,9 +78,9 @@ try :
             print('delete title: %s' % file1['title'])
         file1.Delete()
 
-except Exception, e:
-    print "===== PyDrive fatal error ====="
-    print e
+except Exception as e:
+    print("===== PyDrive fatal error =====")
+    print(e)
     sys.exit()
 
 if message_enable == 1 :
