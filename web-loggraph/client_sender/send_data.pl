@@ -28,25 +28,31 @@ use constant BMP280_POWER_SLEEP  => 0x00;  # sleep
 
 use constant LM75_I2C_ADDRESS => 0x48;
 
+# BMP280データ読み出しバイト数が規定以下（エラー）の場合にセットされるフラグ
+my $error_read_size = 0;
+
+
 {
     my $temp_room = 0;    # 室温
     my $temp_sys  = 0;    # RaspberryPi システム温度
     my $humid     = 0;    # 湿度
     my $pressure  = 0;    # 気圧
 
-    # webアクセス時の簡易パスワード
+    # webアクセス時の簡易パスワード（実際にサーバに設置するときは、推測されにくい文字列に変更すること）
     my $PWD = '1234ABCD';
 
     # Raspberry Piの温度データ読み込み
-    getTemperature( \$temp_room, \$temp_sys, \$pressure );
+    for(my $i=0; $i<5; $i++) {
+        getTemperature( \$temp_room, \$temp_sys, \$pressure );
+        if($error_read_size == 0) { last; }
+        sleep(5);
+    }
 
     # Raspberry Piの湿度データ読み込み
     getHumidity( \$humid );
 
-    socketGetHtml( "http://www.example.com/cgi-bin/add_data.cgi?pwd=$PWD", "",
+    socketGetHtml( "http://www.example.com/cgi-bin/userdir/add_data.cgi?pwd=$PWD", "",
                    "temp_room=$temp_room&temp_sys=$temp_sys&humid=$humid&pressure=$pressure", 5 );
-
-    #socketGetHtml("http://localhost/log-graph/add_data.cgi?pwd=$PWD", "", "temp_room=$temp_room&temp_sys=$temp_sys", 5);
 
     exit;
 }
@@ -132,6 +138,7 @@ sub getTemperature {
     # GPIO 4 を BMP280のVCCとして利用する
     system "/usr/local/bin/gpio -g mode 4 out";
     system "/usr/local/bin/gpio -g write 4 1";
+    sleep(3);   # 電源供給が安定するまで、3秒（適当な値）待つ
     my ( $t, $p ) = bmp280_getvalue();
     printf( "BMP280\ntemperature = %.2f deg-C, pressure = %.2f hPa\n", $t, $p );
     system "/usr/local/bin/gpio -g write 4 0";
@@ -197,6 +204,9 @@ sub getHumidity {
 sub bmp280_getvalue {
     my ( $t, $p ) = ( 0, 0 );
 
+    # I2C読み込みエラーが発生した場合は1がセットされる
+    $error_read_size = 0;
+
     eval {
         my $fh = IO::File->new( "/dev/i2c-1", O_RDWR );
         $fh->ioctl( I2C_SLAVE_FORCE, BMP280_I2C_ADDRESS );
@@ -249,6 +259,12 @@ sub bmp280_getvalue {
           unpack( "C", substr( $data_bytes, 3, 1 ) ) << 12 |
           unpack( "C", substr( $data_bytes, 4, 1 ) ) << 4 |
           unpack( "C", substr( $data_bytes, 5, 1 ) ) >> 4;
+        # check reset state
+        if($adc_p == 0x080000 || $adc_t == 0x080000) {
+            $error_read_size = 1;
+            close($fh);
+            return ( 0, 0 );
+        }
 
         #
         # Calc temperature
@@ -293,6 +309,10 @@ sub bmp280_getvalue {
         die $@;
     }
 
+    # 読み出しエラーの場合
+    if($error_read_size == 1) {
+        return ( 0, 0 );
+    }
     return ( $t, $p );
 
 }
@@ -309,7 +329,13 @@ sub i2c_read_int {
 
     # データ 1Byte 受信
     #（bufferdのreadではなく、unbufferdのsysread利用）
-    $i2c->sysread( $buffer, 2 );
+    my $read_bytes = $i2c->sysread( $buffer, 2 );
+    # 正しく受信したかのチェック
+    if ( !defined($read_bytes) || $read_bytes != 2 ) {
+        $error_read_size = 1;       # 読み出しエラーの場合
+        $buffer = pack("C*", 0, 0);# ダミー値を代入しておく
+        return 0;
+    }
 
     my $val0 = unpack( "v", $buffer ); # リトルエンディアンのshort unsigned intとして解釈
     my $val = unpack( "s", pack( "S", $val0 ) ); # unsigned から signed に変換
@@ -327,7 +353,13 @@ sub i2c_read_unsigned_int {
     $i2c->syswrite($buffer);
 
     # データ 1Byte 受信
-    $i2c->sysread( $buffer, 2 );
+    my $read_bytes = $i2c->sysread( $buffer, 2 );
+    # 正しく受信したかのチェック
+    if ( !defined($read_bytes) || $read_bytes != 2 ) {
+        $error_read_size = 1;       # 読み出しエラーの場合
+        $buffer = pack("C*", 0, 0);# ダミー値を代入しておく
+        return 0;
+    }
 
     my $val = unpack( "v", $buffer ); # リトルエンディアンのshort unsigned intとして解釈
 
@@ -356,8 +388,13 @@ sub i2c_read_bytes {
     $i2c->syswrite($buffer);
 
     # データ $count Byte 受信
-    if ( $i2c->sysread( $buffer, $count ) != $count ) {
-        print "(less data error) \n";
+    my $read_bytes = $i2c->sysread( $buffer, $count );
+    # 読み取りバイト数が想定以下だった場合
+    if ( !defined($read_bytes) || $read_bytes != $count ) {
+        # バッファはダミー値で埋める
+        $buffer = "";
+        for(my $i=0; $i<$count; $i++){ $buffer = $buffer . pack("C*", 0); }
+        $error_read_size = 1;   # 読み出しエラーの場合
     }
 
     return $buffer;

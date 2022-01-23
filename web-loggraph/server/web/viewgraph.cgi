@@ -93,7 +93,7 @@ sub main {
       localtime($timeMax);
 
     # 指定された期間でグラフ作成
-    my $count = drawTempgraph( $timeMin, $timeMax);
+    my $count = drawTempgraph( $timeMin, $timeMax, 0, 50 );
     print "<h2>温度ログ</h2>\n";
 
     # 期間指定のフォーム入力エリア
@@ -131,7 +131,7 @@ sub main {
       . "/$mdayMax) , データ数 $count</p>\n";
     # 最終追加のデータの表示
     print "<p>指定期間内での最終追加データ<br/>\n";
-    printLastAddedData( $timeMin, $timeMax );
+    printLastAddedData( $timeMin, $timeMax, 0, 50 );
     print "</p>\n";
 
     # HTML出力終了
