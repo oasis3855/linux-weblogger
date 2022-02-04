@@ -1,6 +1,11 @@
-GoogleDriveにUSBカメラの画像をアップロード(Pythonスクリプト) <br/>Google Drive Uploader for USB camera image 
+GoogleDriveにUSBカメラの画像をアップロード(Pythonスクリプト) <br/>Google Drive Uploader for USB camera image, Linux Python script
 
 ---
+[Home](https://oasis3855.github.io/webpage/) > [Software](https://oasis3855.github.io/webpage/software/index.html) > [Software Download](https://oasis3855.github.io/webpage/software/software-download.html) > ***googledrive-webcamera*** (this page)
+
+<br />
+<br />
+
 
 - [機能の概略](#機能の概略)
 - [対象OS,依存ソフト等](#対象os依存ソフト等)
@@ -84,12 +89,12 @@ OAuth 2.0 クライアントIDが作成完了すると、認証情報のJSONフ�
 <pre>
 {
     "installed":{
-        "client_id":"<b>123456789012-aHyiTb7k&w3Nuq4mPueWqcLk5iGjdxp2.apps.googleusercontent.com</b>",
+        "client_id":"<b><em>123456789012-aHyiTb7k&w3Nuq4mPueWqcLk5iGjdxp2.apps.googleusercontent.com</em></b>",
         "project_id":"project-id-156354",
         "auth_uri":"https://accounts.google.com/o/oauth2/auth",
         "token_uri":"https://oauth2.googleapis.com/token",
         "auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs",
-        "client_secret":"<b>hjY6oh4Th387Jeirsy3lHiec</b>",
+        "client_secret":"<b><em>hjY6oh4Th387Jeirsy3lHiec</em></b>",
         "redirect_uris":["urn:ietf:wg:oauth:2.0:oob","http://localhost"]}
 }
 </pre>
@@ -100,8 +105,8 @@ OAuth 2.0 クライアントIDが作成完了すると、認証情報のJSONフ�
 <pre>
 client_config_backend: settings
 client_config:
-    client_id: <b>>123456789012-aHyiTb7k&w3Nuq4mPueWqcLk5iGjdxp2.apps.googleusercontent.com</b>
-    client_secret: <b>hjY6oh4Th387Jeirsy3lHiec</b>
+    client_id: <b><em>123456789012-aHyiTb7k&w3Nuq4mPueWqcLk5iGjdxp2.apps.googleusercontent.com</em></b>
+    client_secret: <b><em>hjY6oh4Th387Jeirsy3lHiec</em></b>
 save_credentials: True
 save_credentials_backend: file
 save_credentials_file: credentials.json
@@ -122,7 +127,7 @@ $ <b>python list_files(install).py</b>
   warnings.warn(_MISSING_FILE_MESSAGE.format(filename))
 Go to the following link in your browser:
 ()
-    <b>https://accounts.google.com/o/oauth2/auth?redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&response_type=code&client_id=123456789012-aHyiTb7kAw3Nuq4mPueWqcLk5iGjdxp2.apps.googleusercontent.com&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.file+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.install&approval_prompt=force&access_type=offline</b>
+    <b><em>https://accounts.google.com/o/oauth2/auth?redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&response_type=code&client_id=123456789012-aHyiTb7kAw3Nuq4mPueWqcLk5iGjdxp2.apps.googleusercontent.com&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.file+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.install&approval_prompt=force&access_type=offline</em></b>
 ()
 Enter verification code:
 </pre>
