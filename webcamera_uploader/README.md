@@ -1,7 +1,7 @@
 ## WebサーバにUSBカメラの画像をアップロード(Perlスクリプト) <br/>Web Uploader for USB camera image , Linux Python script<!-- omit in toc -->
 
 
-[Home](https://oasis3855.github.io/webpage/) > [Software](https://oasis3855.github.io/webpage/software/index.html) > [Software Download](https://oasis3855.github.io/webpage/software/software-download.html) > [linux-weblogger](../README.md) > ***webcamera-uploader*** (this page)
+[Home](https://oasis3855.github.io/webpage/) > [Software](https://oasis3855.github.io/webpage/software/index.html) > [Software Download](https://oasis3855.github.io/webpage/software/software-download.html) > [linux-weblogger](../README.md) > ***webcamera_uploader*** (this page)
 
 <br />
 <br />
@@ -22,7 +22,7 @@ Last Updated : Dec. 2021
 
 ## ソフトウエアのダウンロード
 
-- ![download icon](../readme_pics/soft-ico-download-darkmode.gif)   [このGitHubリポジトリを参照する](../webcamera-uploader/) 
+- ![download icon](../readme_pics/soft-ico-download-darkmode.gif)   [このGitHubリポジトリを参照する](../webcamera_uploader/) 
 
 
 ## 機能の概略
