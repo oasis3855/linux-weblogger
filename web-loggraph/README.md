@@ -1,11 +1,14 @@
-Webサーバに温湿度計測値をアップロード(Perlスクリプト) <br/>Web Uploader for temperature, humidity and pressure (BMP280, DHT11) , Linux Python Script
+## Webサーバに温湿度計測値をアップロード(Perlスクリプト) <br/>Web Uploader for temperature, humidity and pressure (BMP280, DHT11) , Linux Python Script<!-- omit in toc -->
 
----
-[Home](https://oasis3855.github.io/webpage/) > [Software](https://oasis3855.github.io/webpage/software/index.html) > [Software Download](https://oasis3855.github.io/webpage/software/software-download.html) > ***web-loggraph*** (this page)
+
+[Home](https://oasis3855.github.io/webpage/) > [Software](https://oasis3855.github.io/webpage/software/index.html) > [Software Download](https://oasis3855.github.io/webpage/software/software-download.html) > [linux-weblogger](../README.md) > ***web-loggraph*** (this page)
 
 <br />
 <br />
 
+Last Updated : May. 2018
+
+- [ソフトウエアのダウンロード](#ソフトウエアのダウンロード)
 - [機能の概略](#機能の概略)
 - [インストール](#インストール)
   - [クライアント側（温湿度センサー側）でのスクリプトの設置](#クライアント側温湿度センサー側でのスクリプトの設置)
@@ -19,13 +22,18 @@ Webサーバに温湿度計測値をアップロード(Perlスクリプト) <br/
 <br />
 <br />
 
+## ソフトウエアのダウンロード
+
+- ![download icon](../readme_pics/soft-ico-download-darkmode.gif)   [このGitHubリポジトリを参照する](../web-loggraph/) 
+
 ## 機能の概略
 
 Linuxが稼働するレンタルサーバに、温湿度・気圧の計測値をアップロードし、グラフ表示させるスクリプト
 
 Linux PC（Raspberry Piも含む）でcronを用いて定期的に実行することで、環境データのWebロガーとして使うことを意図しています。
 
-  ![機能の概略図](readme_pics/tempgraph-schematic.png)
+  ![機能の概略図](readme_pics/tempgraph-schematic.png#gh-light-mode-only)
+  ![機能の概略図](readme_pics/tempgraph-schematic-darkmode.png#gh-dark-mode-only)
 
 - Webサーバで自動作成されるグラフ表示のサンプル例
 

@@ -1,13 +1,15 @@
-WebサーバにUSBカメラの画像をアップロード(Perlスクリプト) <br/>
-Web Uploader for USB camera image , Linux Python script
+## WebサーバにUSBカメラの画像をアップロード(Perlスクリプト) <br/>Web Uploader for USB camera image , Linux Python script<!-- omit in toc -->
 
----
 
-[Home](https://oasis3855.github.io/webpage/) > [Software](https://oasis3855.github.io/webpage/software/index.html) > [Software Download](https://oasis3855.github.io/webpage/software/software-download.html) > ***webcamera-uploader*** (this page)
+[Home](https://oasis3855.github.io/webpage/) > [Software](https://oasis3855.github.io/webpage/software/index.html) > [Software Download](https://oasis3855.github.io/webpage/software/software-download.html) > [linux-weblogger](../README.md) > ***webcamera-uploader*** (this page)
 
 <br />
 <br />
 
+Last Updated : Dec. 2021
+
+
+- [ソフトウエアのダウンロード](#ソフトウエアのダウンロード)
 - [機能の概略](#機能の概略)
 - [インストール](#インストール)
   - [クライアント側（カメラ接続したPC）でのスクリプトの設置](#クライアント側カメラ接続したpcでのスクリプトの設置)
@@ -18,13 +20,19 @@ Web Uploader for USB camera image , Linux Python script
 <br />
 <br />
 
+## ソフトウエアのダウンロード
+
+- ![download icon](../readme_pics/soft-ico-download-darkmode.gif)   [このGitHubリポジトリを参照する](../webcamera-uploader/) 
+
+
 ## 機能の概略
 
 Linuxが稼働するレンタルサーバに、Webカメラで撮影した画像ファイルをアップロードし、一覧表示させるスクリプト
 
 Linux PC（Raspberry Piも含む）でcronを用いて定期的に実行することで、監視カメラとして使うことを意図しています。画像ファイル保存場所を外部（遠隔地のWebサーバ）とすることで、監視カメラを接続したPCを破壊されても画像は残ります。
 
-  ![機能の概略図](readme_pics/webcamera-uploader-schematic.png)
+  ![機能の概略図](readme_pics/webcamera-uploader-schematic.png#gh-light-mode-only)
+  ![機能の概略図](readme_pics/webcamera-uploader-schematic-darkmode.png#gh-dark-mode-only)
 
 - Webサーバで自動作成される一覧表示のサンプル例
 

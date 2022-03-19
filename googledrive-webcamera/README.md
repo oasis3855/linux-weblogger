@@ -1,12 +1,15 @@
-GoogleDriveにUSBカメラの画像をアップロード(Pythonスクリプト) <br/>Google Drive Uploader for USB camera image, Linux Python script
+## GoogleDriveにUSBカメラの画像をアップロード(Pythonスクリプト) <br/>Google Drive Uploader for USB camera image, Linux Python script<!-- omit in toc -->
 
----
-[Home](https://oasis3855.github.io/webpage/) > [Software](https://oasis3855.github.io/webpage/software/index.html) > [Software Download](https://oasis3855.github.io/webpage/software/software-download.html) > ***googledrive-webcamera*** (this page)
+
+[Home](https://oasis3855.github.io/webpage/) > [Software](https://oasis3855.github.io/webpage/software/index.html) > [Software Download](https://oasis3855.github.io/webpage/software/software-download.html) > [linux-weblogger](../README.md) > ***googledrive-webcamera*** (this page)
 
 <br />
 <br />
 
+Last Updated : Dec. 2021
 
+
+- [ソフトウエアのダウンロード](#ソフトウエアのダウンロード)
 - [機能の概略](#機能の概略)
 - [対象OS,依存ソフト等](#対象os依存ソフト等)
 - [インストール](#インストール)
@@ -18,13 +21,21 @@ GoogleDriveにUSBカメラの画像をアップロード(Pythonスクリプト) 
 - [バージョン履歴](#バージョン履歴)
 - [ライセンス](#ライセンス)
 
+<br />
+<br />
+
+## ソフトウエアのダウンロード
+
+- ![download icon](../readme_pics/soft-ico-download-darkmode.gif)   [このGitHubリポジトリを参照する](../googledrive-webcamera/) 
+
 ## 機能の概略
 
 Webカメラで撮影した画像ファイルを、Googleドライブにアップロードします。
 
 Linux サーバ（Raspberry Piも含む）でcronを用いて定期的に実行することで、監視カメラとして使うことを意図しています。画像ファイル保存場所を外部（Googleドライブ）とすることで、サーバを破壊されても画像は残ります。
 
-  ![機能の概略図](readme_pics/gdrive-schematic.png)
+  ![機能の概略図](readme_pics/gdrive-schematic.png#gh-light-mode-only)
+  ![機能の概略図](readme_pics/gdrive-schematic-darkmode.png#gh-dark-mode-only)
 
 - Googleドライブのページ例
 
@@ -149,8 +160,8 @@ cronで定期実行させるために、```sudo crontab -e``` などで設定す
     2 10 * * * /usr/bin/python /usr/local/bin/gdrive-upload-camera/gdrive_delete_oldfiles.py --nomessage > /dev/null 2>&1
 
 ## バージョン履歴
-- Version 1.0 (2019/Feb/07)
-- version 1.1 (2021/Dec/30) 
+- Version 1.0 (2019/02/07)
+- version 1.1 (2021/12/30) 
   - Python3対応
 
 
